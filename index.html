@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New College Assignment Exchange — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FBF8F7; --surface:#FFFFFF; --sunken:#F4EFEF;
+  --ink:#1A1416; --muted:#6B5D60; --faint:#9A8C8F;
+  --line:#E7DEDF; --line-strong:#D6C9CB;
+  --maroon:#8C1D40; --maroon-soft:#F6E9ED; --maroon-ink:#6E1633;
+  --gold:#E0A800; --gold-fill:#FFC627; --gold-soft:#FCF3DA;
+  --verified:#2E6F52; --verified-soft:#E4F0EA;
+  --slack:#4A154B;
+  --shadow:0 1px 2px rgba(26,20,22,.05), 0 8px 24px -16px rgba(26,20,22,.25);
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif:"Newsreader", Georgia, "Times New Roman", serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141011; --surface:#1D1819; --sunken:#241E20;
+    --ink:#F2EAEB; --muted:#AC9DA0; --faint:#7D6E71;
+    --line:#332B2D; --line-strong:#463B3E;
+    --maroon:#D4738F; --maroon-soft:#3A1F28; --maroon-ink:#EBA9BC;
+    --gold:#FFC627; --gold-fill:#FFC627; --gold-soft:#3A2F14;
+    --verified:#6FBF95; --verified-soft:#1C3229;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141011; --surface:#1D1819; --sunken:#241E20;
+  --ink:#F2EAEB; --muted:#AC9DA0; --faint:#7D6E71;
+  --line:#332B2D; --line-strong:#463B3E;
+  --maroon:#D4738F; --maroon-soft:#3A1F28; --maroon-ink:#EBA9BC;
+  --gold:#FFC627; --gold-fill:#FFC627; --gold-soft:#3A2F14;
+  --verified:#6FBF95; --verified-soft:#1C3229;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--maroon);outline-offset:2px;border-radius:3px}
+
+/* ---------- top chrome ---------- */
+.chrome{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  background:var(--surface);border-bottom:1px solid var(--line)}
+.chrome-in{max-width:1180px;margin:0 auto;padding:0 20px;
+  display:flex;align-items:center;gap:14px;min-height:54px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;margin-right:auto}
+.brand-mark{width:26px;height:26px;border-radius:6px;background:var(--maroon);
+  color:#fff;display:grid;place-items:center;font-family:var(--serif);
+  font-size:15px;font-weight:600;flex:none}
+.brand b{font-weight:600;font-size:14.5px;letter-spacing:-.01em}
+.brand span{color:var(--faint);font-size:12px;display:block;line-height:1.3}
+
+.slackbtn{display:flex;align-items:center;gap:8px;padding:5px 11px 5px 6px;
+  border:1px solid var(--line-strong);border-radius:999px;background:var(--surface)}
+.slackbtn:hover{border-color:var(--maroon)}
+.av{width:24px;height:24px;border-radius:5px;flex:none;display:grid;place-items:center;
+  font-size:10px;font-weight:700;color:#fff;letter-spacing:.02em}
+.who{font-size:12.5px;font-weight:600;line-height:1.2}
+.who em{display:block;font-style:normal;font-weight:400;color:var(--faint);font-size:10.5px}
+.slackdot{width:13px;height:13px;flex:none;border-radius:3px;background:var(--slack);
+  display:grid;place-items:center;color:#fff;font-size:8px;font-weight:700}
+.themebtn{padding:5px 9px;border:1px solid var(--line-strong);border-radius:7px;
+  font-size:12px;color:var(--muted)}
+
+/* ---------- prototype notice ---------- */
+.notice{background:var(--gold-soft);border-bottom:1px solid var(--line);
+  font-size:12.5px;color:var(--ink)}
+.notice div{max-width:1180px;margin:0 auto;padding:8px 20px;
+  display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.notice b{font-weight:700}
+.notice span{color:var(--muted)}
+
+/* ---------- masthead ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+.mast{padding-block:34px 24px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--maroon);font-weight:500}
+.mast h1{font-family:var(--serif);font-size:clamp(30px,5.2vw,46px);
+  font-weight:500;letter-spacing:-.02em;line-height:1.08;margin:10px 0 0;max-width:19ch}
+.mast p{margin:12px 0 0;color:var(--muted);max-width:62ch;font-size:15.5px}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:24px}
+.stat b{display:block;font-family:var(--serif);font-size:27px;font-weight:600;
+  line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:216px 1fr;gap:30px;
+  align-items:start;padding-block:24px 56px}
+@media (max-width:860px){.cols{grid-template-columns:1fr;gap:18px}}
+
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);
+  display:flex;flex-direction:column;gap:20px}
+@media (max-width:860px){.side{position:static}}
+.sect{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:8px;font-weight:500}
+.facets{display:flex;flex-direction:column;gap:1px}
+@media (max-width:860px){.facets{flex-direction:row;flex-wrap:wrap;gap:6px}}
+.facet{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;
+  font-size:13px;text-align:left;color:var(--muted);width:100%}
+@media (max-width:860px){.facet{width:auto;border:1px solid var(--line)}}
+.facet:hover{background:var(--sunken);color:var(--ink)}
+.facet[aria-pressed="true"]{background:var(--maroon-soft);color:var(--maroon-ink);font-weight:600}
+.facet .n{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint);
+  font-variant-numeric:tabular-nums}
+.facet[aria-pressed="true"] .n{color:var(--maroon-ink)}
+
+/* ---------- toolbar ---------- */
+.tools{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line-strong);
+  border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.search::placeholder{color:var(--faint)}
+.sortbtn{padding:8px 11px;border:1px solid var(--line-strong);border-radius:8px;
+  font-size:12.5px;color:var(--muted);background:var(--surface)}
+.sortbtn[aria-pressed="true"]{border-color:var(--maroon);color:var(--maroon-ink);
+  background:var(--maroon-soft);font-weight:600}
+.count{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+/* ---------- cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:15px 15px 12px;display:flex;flex-direction:column;gap:9px;text-align:left;
+  transition:border-color .13s, box-shadow .13s}
+.card:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.card.t1{border-left:3px solid var(--verified)}
+.card.local{border-left:3px solid var(--maroon)}
+.card-top{display:flex;align-items:flex-start;gap:9px}
+.card h3{font-size:14.5px;font-weight:600;line-height:1.3;letter-spacing:-.005em;flex:1}
+.sid{font-family:var(--mono);font-size:10px;color:var(--faint);flex:none;padding-top:2px}
+.card p{margin:0;font-size:13px;color:var(--muted);line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);
+  color:var(--muted);white-space:nowrap}
+.tag.ok{background:var(--verified-soft);border-color:transparent;color:var(--verified);font-weight:600}
+.tag.mine{background:var(--maroon-soft);border-color:transparent;color:var(--maroon-ink);font-weight:600}
+.card-foot{display:flex;align-items:center;gap:4px;margin-top:auto;padding-top:9px;
+  border-top:1px solid var(--line)}
+.act{display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:6px;
+  font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.act:hover{background:var(--sunken);color:var(--ink)}
+.act svg{width:13px;height:13px;flex:none}
+.act.on{color:var(--gold);font-weight:600}
+.act.on svg{fill:var(--gold-fill);stroke:var(--gold)}
+.credit{margin-left:auto;display:flex;align-items:center;gap:5px}
+.credit .av{width:19px;height:19px;font-size:8.5px;border-radius:4px}
+.credit small{font-size:11px;color:var(--faint)}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(26,20,22,.42);z-index:60;
+  backdrop-filter:blur(2px)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);z-index:61;
+  background:var(--surface);border-left:1px solid var(--line-strong);
+  overflow-y:auto;padding:22px 24px calc(34px + env(safe-area-inset-bottom,0px))}
+.dr-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.dr-head h2{font-family:var(--serif);font-size:23px;font-weight:600;
+  line-height:1.16;letter-spacing:-.015em;flex:1}
+.x{width:28px;height:28px;border-radius:7px;flex:none;display:grid;place-items:center;
+  color:var(--muted);font-size:17px}
+.x:hover{background:var(--sunken);color:var(--ink)}
+.dr-body{font-size:14px;color:var(--muted);line-height:1.6;margin:12px 0 0}
+.dr-sect{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.dr-sect h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint);font-weight:500;margin:0 0 10px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.meta dt{color:var(--faint)}
+.meta dd{margin:0;color:var(--ink)}
+.bigacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.big{display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;
+  border:1px solid var(--line-strong);font-size:13.5px;font-weight:500;background:var(--surface)}
+.big:hover{border-color:var(--maroon);color:var(--maroon-ink)}
+.big svg{width:14px;height:14px}
+.big.primary{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.big.primary:hover{background:var(--maroon-ink);color:#fff}
+.big.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+.big.on svg{fill:var(--gold-fill);stroke:var(--gold)}
+
+/* lineage */
+.tree{display:flex;flex-direction:column;gap:0;font-size:13px}
+.node{display:flex;gap:10px;align-items:flex-start;padding:9px 0}
+.node .rail{width:16px;flex:none;display:flex;flex-direction:column;
+  align-items:center;align-self:stretch}
+.node .dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--maroon);
+  background:var(--surface);flex:none;margin-top:5px}
+.node.child .dot{border-color:var(--line-strong)}
+.node .line{flex:1;width:2px;background:var(--line)}
+.node b{display:block;font-weight:600;font-size:13px}
+.node small{color:var(--faint);font-size:11.5px;font-family:var(--mono)}
+.node em{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:3px}
+
+.link{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;
+  border:1px solid var(--line);font-size:13px;color:var(--ink);margin-bottom:6px;width:100%;text-align:left}
+.link:hover{border-color:var(--maroon);background:var(--maroon-soft)}
+.link .chip{font-family:var(--mono);font-size:9.5px;padding:2px 6px;border-radius:4px;
+  background:var(--sunken);color:var(--muted);flex:none}
+.link em{margin-left:auto;font-style:normal;color:var(--faint);font-size:11px}
+
+.foot{border-top:1px solid var(--line);padding-block:22px 40px;font-size:12.5px;
+  color:var(--faint);max-width:70ch}
+.foot b{color:var(--muted)}
+.empty{padding:50px 0;text-align:center;color:var(--faint);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-in">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div>
+        <b>Assignment Exchange</b>
+        <span>New College &middot; ASU</span>
+      </div>
+    </div>
+    <button class="slackbtn" id="signin">
+      <span class="av" id="me-av" style="background:#8C1D40">BW</span>
+      <span class="who">Baoyu Wang<em id="me-sub">Demo profile</em></span>
+      <span class="slackdot">#</span>
+    </button>
+    <button class="themebtn" id="theme">Dark</button>
+  </div>
+</div>
+
+<div class="notice">
+  <div>
+    <b>Prototype.</b>
+    <span>A snapshot of 88 assignment records from the project library. Search and filters work in this prototype. Contributor names, activity counts, and adaptation actions are illustrative. No live sign-in or database sync.</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow">Dean&rsquo;s Fellowship 2026&ndash;27</div>
+    <h1>Assignment designs for teaching in the age of AI</h1>
+    <p>A working library of assignment designs that have actually been taught, each marked with how much of it we could verify. The planned Hub will let faculty adapt designs for their courses while preserving links and credit to the original contributions.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="cols">
+    <aside class="side">
+      <div>
+        <div class="sect">Evidence</div>
+        <div class="facets" id="tiers"></div>
+      </div>
+      <div>
+        <div class="sect">What you&rsquo;re solving</div>
+        <div class="facets" id="pkgs"></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="tools">
+        <input class="search" id="q" type="search" placeholder="Search designs, disciplines, methods&hellip;" aria-label="Search the library">
+        <button class="sortbtn" id="s-stars" aria-pressed="false">Most starred</button>
+        <button class="sortbtn" id="s-forks" aria-pressed="false">Most adapted</button>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>Nothing matches those filters.</div>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <p><b>Next steps.</b> This static prototype uses an embedded library snapshot. A future ASU-supported version could connect Airtable and Canvas, support approved ASU sign-in, and save adaptations with attribution. These integrations are not active in this demo.</p>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"id":"DES-002","title":"Just-in-time AI tutoring inside a shared code notebook","summary":"University of Tennessee at Chattanooga's design centres on just-in-time AI tutoring inside a shared code notebook. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":2,"disc":"Psychology Statistics","level":"Undergraduate and Graduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-029","title":"Use OpenAI for R&D, ship a working solution, write the evaluation report","summary":"London Metropolitan University's design centres on use OpenAI for R&D, ship a working solution, write the evaluation report. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":2,"disc":"Game Programming / Computing","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-058","title":"AI dialogue as scaffolding for graduate statistical inference and research design","summary":"ERIC / Doctor of Education program context's design centres on aI dialogue as scaffolding for graduate statistical inference and research design. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":2,"disc":"Quantitative Methods in Psychology","level":"Graduate / Doctoral level","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-060","title":"Reverse generative learning: teach the AI as your partner","summary":"Makransky et al. / ChatTutor paradigm's design centres on reverse generative learning: teach the AI as your partner. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":2,"disc":"Cognitive & Educational Psychology","level":"Master's level coursework","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-160","title":"Copilot as research assistant, scaffolded into a semester research plan","summary":"An unreported institution's design centres on copilot as research assistant, scaffolded into a semester research plan. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":2,"disc":"Sociology / Methods of Social Research","level":"Undergraduate, upper division (3000-level)","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-161","title":"Feynman-method self-testing against an AI questioner","summary":"A reusable prompt that turns the AI into an examiner: the student explains a concept as if teaching a beginner while the AI asks one question at a time and reports back where the understanding is thin.","type":"AI as tutor or scaffold","pkg":"AI as tutor or scaffold","tier":1,"disc":"Education / Cognitive and Developmental Psychology","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-001","title":"AI draft → rubric critique → tracked revision → public video","summary":"An AI-written psychology media release serves as the first draft; students critique it against the rubric, revise it without AI, and produce a video summary for the public.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Social and Developmental Psychology","level":"Undergraduate, year 2","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-007","title":"ChatGPT gives the feedback first, then students grade the feedback","summary":"This entry centres on chatGPT gives the feedback first, then students grade the feedback. The record is enough to identify the shape of the task, but little detail is public.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Adult / Graduate Education","level":"graduate adult learners","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-010","title":"Let AI write it, then restore the author's voice and inclusivity","summary":"This entry centres on let AI write it, then restore the author's voice and inclusivity. The record is enough to identify the shape of the task, but little detail is public.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Technical and Professional Communication","level":"Undergraduate, introductory","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-019","title":"Have AI attack the argument you had settled on, then judge it and rewrite","summary":"Students form their own argument first, then have generative AI raise counter-arguments, strengthening the original through critical judgement rather than by accepting the output.","type":"AI as adversary","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Political Science / American Politics","level":"Undergraduate, introductory to intermediate","mode":"In person","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-032","title":"A two-step critique of an AI-generated essay","summary":"King's University College's design centres on a two-step critique of an AI-generated essay. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Academic Writing","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-036","title":"AI-assisted debate preparation on the Sapir-Whorf hypothesis","summary":"University of Virginia's design centres on aI-assisted debate preparation on the Sapir-Whorf hypothesis. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as adversary","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Linguistics / Cognition","level":"Undergraduate","mode":"Hybrid","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-047","title":"The ChatGPT exam: critique a generative AI argument","summary":"This entry centres on the ChatGPT exam: critique a generative AI argument. The record is enough to identify the shape of the task, but little detail is public.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"History","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-053","title":"Critical revision with visible tracked changes and marginal commentary","summary":"Students revise a deliberately weak or factually wrong AI essay in a word processor, leaving the reason for each change visible.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Cross-disciplinary / Critical thinking","level":"Unspecified","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-054","title":"Close analysis of deliberately contradictory adversarial prompts","summary":"Anna Mills / Continuous Learning Institute / AI Pedagogy Project's design centres on close analysis of deliberately contradictory adversarial prompts. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"AI as adversary","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Critical Thinking / Applied Psychology","level":"Graduate / Advanced Undergraduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-061","title":"A maximally critical book review with thick description of the literature","summary":"AI reviews the book first; students then review the AI's output, optionally adding a personal glossary as evidence of close reading.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Psychology of Learning / Education","level":"Graduate course R511","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-063","title":"Tracked revision of AI-generated text","summary":"The instructor supplies a 500-word LLM essay that students treat as empirical material to critique, correct, and test with examples and counter-examples.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Economic Sociology","level":"Upper-division undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-162","title":"Generate a case study with AI, then take its method apart","summary":"Every student gets a different research scenario because each one prompts the AI for a topic they are actually curious about — then critiques its method with AI explicitly barred.","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":1,"disc":"Education / Cognitive Psychology","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"LOCAL-001","title":"Media release, restructured for a 7.5-week online session","summary":"Dropped the video stage, added a Week 5 source map","type":"AI drafts, you critique and revise","pkg":"AI produces it, you judge and repair it","tier":2,"disc":"Psychology","level":"","mode":"Online","rec":"Local adaptation","verbatim":false,"adapted_from":true,"change":"The video summary will not fit a 7.5-week session. Added a Week 5 source map so I can see their thinking before the AI               draft arrives, not after."},{"id":"DES-024","title":"Your own university education as the object no one else can analyse","summary":"Stanford University's design centres on your own university education as the object no one else can analyse. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Anchored in your own context","pkg":"Anchored in the student's own situation","tier":2,"disc":"Computer Science / Human-Centered AI","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-028","title":"Gather evidence from three real practitioners before AI drafts the job description","summary":"This entry centres on gather evidence from three real practitioners before AI drafts the job description. The record is enough to identify the shape of the task, but little detail is public.","type":"Anchored in your own context","pkg":"Anchored in the student's own situation","tier":2,"disc":"Human Resource Management","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-037","title":"An AI-integrated semester planning assignment","summary":"University of Virginia's design centres on an AI-integrated semester planning assignment. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Anchored in your own context","pkg":"Anchored in the student's own situation","tier":1,"disc":"Education / Cognitive Psychology","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-069","title":"D1: personal case conceptualisation","summary":"Students treat a challenge they have lived through as the case, and conceptualise it using one counselling theory from the course.","type":"Anchored in your own context","pkg":"Anchored in the student's own situation","tier":1,"disc":"Counseling / Psychology Education","level":"Unspecified","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-070","title":"D2: an observation diary","summary":"Rethinking Assessment's design centres on d2: an observation diary. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Anchored in your own context","pkg":"Anchored in the student's own situation","tier":2,"disc":"Psychology","level":"unspecified","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-033","title":"An AI contribution statement for a research proposal","summary":"UC Santa Barbara's design centres on an AI contribution statement for a research proposal. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":1,"disc":"Psychology / Research Methods","level":"Undergraduate (PSY 10A)","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-042","title":"A GenAI contract with four reflection points","summary":"University of Michigan's design centres on a GenAI contract with four reflection points. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":1,"disc":"Computer Science (intermediate Python)","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-043","title":"DEAL reflection against a recording of your own performance","summary":"University of Maine's design centres on dEAL reflection against a recording of your own performance. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":2,"disc":"Computer Science / Software Engineering","level":"Undergraduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-050","title":"Declare and reflect on AI use, or take a one-to-one interview","summary":"Oregon State University's design centres on declare and reflect on AI use, or take a one-to-one interview. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":2,"disc":"Cross-disciplinary","level":"Unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-051","title":"Repeated reflection on the process of using AI on an assignment","summary":"This entry centres on repeated reflection on the process of using AI on an assignment. The record is enough to identify the shape of the task, but little detail is public.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":2,"disc":"Computer Science","level":"Unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-066","title":"A double reflection template","summary":"Assessment & Evaluation in Higher Education study context's design centres on a double reflection template. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":2,"disc":"Cross-disciplinary doctoral writing","level":"Doctoral","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-080","title":"Exam wrapper reflection","summary":"An exam wrapper uses a short questionnaire to surface how students prepared, how they felt, how confident they were, and what they will change next time.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":1,"disc":"Cross-disciplinary","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-081","title":"Paper wrapper reflection questions","summary":"A paper wrapper or cover letter accompanies the main assignment, explaining process, decisions, difficulties, and any use of generative AI.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":1,"disc":"Cross-disciplinary","level":"University","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-158","title":"Free integration of AI text in a teacher-education essay, with a use reflection","summary":"AI text may be incorporated freely but must be cited, with a closing reflection on its quality, prior experience, and the student's own classroom policy.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":1,"disc":"Teacher Education / Educational Administration and Supervision","level":"Graduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-159","title":"Required AI oversight evidence on every assignment: system prompt plus reflection","summary":"Royal Thimphu College's design centres on required AI oversight evidence on every assignment: system prompt plus reflection. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Reflection and disclosure","pkg":"Declare it, then reflect on it","tier":2,"disc":"Anthropology of Religion / Ethnographic Writing / Society and Technology","level":"Not reported","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-008","title":"ChatGPT as a discussion participant students must reflect on, twice","summary":"This entry centres on chatGPT as a discussion participant students must reflect on, twice. The record is enough to identify the shape of the task, but little detail is public.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Literacy / Education","level":"graduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-045","title":"A discussion-board AI use log, designed for psychological safety","summary":"Risepoint Faculty Center's design centres on a discussion-board AI use log, designed for psychological safety. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Social Sciences / Humanities","level":"Undergraduate / Graduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-059","title":"Think, pair, query the AI, share: a four-way asynchronous discussion","summary":"Finley-Croswhite / Gross; Journal of Literacy and Technology's design centres on think, pair, query the AI, share: a four-way asynchronous discussion. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Social Psychology / Higher Education Pedagogy","level":"Graduate / Advanced Coursework","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-073","title":"UNM graded prompt examples","summary":"The UNM Level 3 example requires keeping the AI's original answer, interrogating it against the course readings, and weighing its contributions and flaws in peer replies.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":1,"disc":"Cross-disciplinary (example: New Mexico acequia systems)","level":"University level","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-075","title":"Discussion board flow: AI answers first, then critique, then revision","summary":"Faulkner University's design centres on discussion board flow: AI answers first, then critique, then revision. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Cross-disciplinary","level":"University","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-076","title":"A rubric for AI-interaction discussion posts","summary":"University of Central Florida's design centres on a rubric for AI-interaction discussion posts. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Cross-disciplinary","level":"University","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-077","title":"A discussion board where students pose the questions and verify each other","summary":"Faulkner University's design centres on a discussion board where students pose the questions and verify each other. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Discussion boards rebuilt","pkg":"Discussion boards rebuilt","tier":2,"disc":"Cross-disciplinary","level":"University","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-020","title":"A weekly prompt-and-image blog, a midterm showing, and a final visual work","summary":"Cornell University's design centres on a weekly prompt-and-image blog, a midterm showing, and a final visual work. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Generate many, curate few","pkg":"Generate many, curate few","tier":2,"disc":"Fiber Science / Apparel Design","level":"senior undergraduate","mode":"Hybrid","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-021","title":"Generate many candidates, choose deliberately, build the 3D model by hand","summary":"Cornell University's design centres on generate many candidates, choose deliberately, build the 3D model by hand. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Generate many, curate few","pkg":"Generate many, curate few","tier":2,"disc":"Landscape Architecture","level":"graduate","mode":"In person","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-022","title":"Submit all forty generations, bring only fifteen to twenty into critique","summary":"Students use Midjourney to probe and intervene in archival bias, separating process from final discussion through mass generation, a complete record, and a curated selection.","type":"Generate many, curate few","pkg":"Generate many, curate few","tier":1,"disc":"Studio Art / decolonial humanities","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-049","title":"A generative AI doomsday comic","summary":"University of Virginia's design centres on a generative AI doomsday comic. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Generate many, curate few","pkg":"Generate many, curate few","tier":1,"disc":"Religious Studies","level":"Unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-071","title":"E1: a multimodal analysis portfolio","summary":"Unnamed UAE university / Frontiers in Education study's design centres on e1: a multimodal analysis portfolio. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Generate many, curate few","pkg":"Generate many, curate few","tier":2,"disc":"Academic writing; transferable to psychology","level":"University","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-004","title":"A quarter-long AI relationship log, analysed as your own process record","summary":"Stanford University's design centres on a quarter-long AI relationship log, analysed as your own process record. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":2,"disc":"Communication / media psychology","level":"COMM 173A/273A","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-009","title":"Generate, re-prompt, narrate the process, then answer two peers","summary":"This entry centres on generate, re-prompt, narrate the process, then answer two peers. The record is enough to identify the shape of the task, but little detail is public.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":2,"disc":"Writing","level":"Level unstated","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-013","title":"Mark every trace a digital tool left in the final essay, then analyse it","summary":"Two unnamed Swiss universities's design centres on mark every trace a digital tool left in the final essay, then analyse it. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":2,"disc":"University language learning","level":"University level; year unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-017","title":"Have AI summarise an article you actually read, and grade the prompts","summary":"Cornell University's design centres on have AI summarise an article you actually read, and grade the prompts. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":2,"disc":"Writing","level":"first-year undergraduate","mode":"In person","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-052","title":"Full prompt-transcript tracking and a validity audit across the writing process","summary":"Guy A. Boysen et al. / APA journal context's design centres on full prompt-transcript tracking and a validity audit across the writing process. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":2,"disc":"Psychology / Educational Psychology","level":"Graduate / Advanced Coursework","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-067","title":"C1: a structured prompt log table","summary":"Utrecht University's design centres on c1: a structured prompt log table. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":1,"disc":"Cross-disciplinary","level":"University","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-068","title":"C2: a six-column prompt log","summary":"A six-column prompt log records prompt formation, output, human editing and integration, and ethical judgement side by side.","type":"Process evidence and logs","pkg":"Prompt logs and AI-use records","tier":1,"disc":"Cross-disciplinary / Education","level":"University level; unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-023","title":"Write a real bill recommendation as a legislative staffer; AI for reading only","summary":"Students act as an AI policy staffer in a congressional office, producing a formal legislative recommendation on a bill genuinely under consideration.","type":"Role-play and simulation","pkg":"Role-play and simulation","tier":1,"disc":"Computer Science / AI Governance","level":"Course level not stated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-026","title":"Wizard of Oz: a human plays the AI while the class stress-tests the system","summary":"Rather than shipping code, students have a person play the AI behind the curtain, to test quickly how a human-in-the-loop system behaves in unexpected situations.","type":"Role-play and simulation","pkg":"Role-play and simulation","tier":1,"disc":"Computer Science / Human-Centered AI","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-039","title":"AI-simulated client and patient role-play","summary":"This entry centres on aI-simulated client and patient role-play. The record is enough to identify the shape of the task, but little detail is public.","type":"Role-play and simulation","pkg":"Role-play and simulation","tier":2,"disc":"Counselling Psychology / Educational Psychology","level":"Graduate / Undergraduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-055","title":"AI role-play interviews with historical schools of thought, distilled into qualitative evidence","summary":"Students interview a historical or fictional figure played by AI, then treat the transcript as evidence to be cited and analysed.","type":"Role-play and simulation","pkg":"Role-play and simulation","tier":1,"disc":"History / Literary Analysis","level":"Higher education; level unstated","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-057","title":"AI-generated organisational and clinical scenarios for needs analysis","summary":"Krys & Braßler / Springer Nature context's design centres on aI-generated organisational and clinical scenarios for needs analysis. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Role-play and simulation","pkg":"Role-play and simulation","tier":2,"disc":"Work & Organizational / Clinical Psychology","level":"Master's level coursework","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-034","title":"A recorded reading-group critique in place of the paper","summary":"Boise State；Teach Psych blog author；Society for the Teaching of Psychology's design centres on a recorded reading-group critique in place of the paper. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Oral defence and live performance","pkg":"Securing it: oral defence and two-lane policy","tier":2,"disc":"Cognitive Psychology","level":"Undergraduate, upper division; large class","mode":"Hybrid","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-040","title":"The University of Sydney two-lane assessment framework","summary":"University of Sydney's design centres on the University of Sydney two-lane assessment framework. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Two-lane and course policy","pkg":"Securing it: oral defence and two-lane policy","tier":2,"disc":"Cross-disciplinary","level":"University-wide, including graduate","mode":"In person","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-062","title":"A ten-minute Socratic dialogue and metacognitive reflection log","summary":"Lance Eaton / EDUCAUSE Exchange's design centres on a ten-minute Socratic dialogue and metacognitive reflection log. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Oral defence and live performance","pkg":"Securing it: oral defence and two-lane policy","tier":2,"disc":"Social Sciences / Psychology-transferable","level":"Graduate / Advanced Higher Ed","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-072","title":"AIAS graded disclosure statements","summary":"The AI Assessment Scale turns the level of AI involvement permitted on each assignment into a statement students can act on.","type":"Two-lane and course policy","pkg":"Securing it: oral defence and two-lane policy","tier":1,"disc":"Cross-disciplinary","level":"University","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-157","title":"An AI-permitted take-home exam followed by an online oral defence","summary":"An unreported institution (BLS programme)'s design centres on an AI-permitted take-home exam followed by an online oral defence. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Oral defence and live performance","pkg":"Securing it: oral defence and two-lane policy","tier":2,"disc":"Microbiology","level":"Undergraduate, year 2","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-014","title":"A five-stage AI research paper with a required logbook and human-only sections","summary":"Rollins's design centres on a five-stage AI research paper with a required logbook and human-only sections. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":2,"disc":"Ancient Algorithms / Cross-disciplinary general education","level":"Undergraduate Honors","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-015","title":"Every Canvas submission carries a version-history link, plus an oral follow-up","summary":"This entry centres on every Canvas submission carries a version-history link, plus an oral follow-up. The record is enough to identify the shape of the task, but little detail is public.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":2,"disc":"Higher education writing; discipline unstated","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-035","title":"Use AI to attempt something impossible","summary":"Students pick an unusually hard persuasive task, work on it with AI, and account for both parties' contributions through a log, a presentation, and a rubric they write themselves.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":1,"disc":"Management Communication / Business","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-041","title":"DURA procedural process reflections at weeks 4, 8 and 13","summary":"Virginia Tech's design centres on dURA procedural process reflections at weeks 4, 8 and 13. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":1,"disc":"Computer Science","level":"Undergraduate (CS2 / CS2114)","mode":"Hybrid","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-046","title":"Writing split into stages, with iterative feedback","summary":"University of Chicago's design centres on writing split into stages, with iterative feedback. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":2,"disc":"Cross-disciplinary","level":"Undergraduate / Graduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-048","title":"A monitored writing process submitted with its version history","summary":"This entry centres on a monitored writing process submitted with its version history. The record is enough to identify the shape of the task, but little detail is public.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":2,"disc":"Cross-disciplinary","level":"Unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-056","title":"A metacognitive log of where you got stuck and which approaches dead-ended","summary":"MIT Teaching + Learning Lab's design centres on a metacognitive log of where you got stuck and which approaches dead-ended. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Process evidence and logs","pkg":"Staged submission, version traces and stuck points","tier":2,"disc":"Cognitive Psychology / Statistics / Complex Problem-Solving","level":"Graduate / Advanced Coursework","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-003","title":"Synthesise the research and film material yourself, then let AI compress it","summary":"Stanford University's design centres on synthesise the research and film material yourself, then let AI compress it. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Communication / media psychology","level":"COMM 173A/273A; UG and graduate not distinguished","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-012","title":"Discuss an ethics case with humans, then with an LLM, then compare","summary":"Uppsala University's design centres on discuss an ethics case with humans, then with an LLM, then compare. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Computing professional ethics","level":"Master's","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-016","title":"Do one step of the writing process by hand, then have AI do the same step","summary":"Cornell University's design centres on do one step of the writing process by hand, then have AI do the same step. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Writing","level":"first-year undergraduate","mode":"In person","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-018","title":"Define a contested concept yourself, then set it against ChatGPT's definition","summary":"Students define the key concepts in a political controversy on their own, then compare their analysis point by point with ChatGPT's definitions.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":1,"disc":"Political Science / Government","level":"Undergraduate, introductory to intermediate","mode":"In person","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-025","title":"The same design brief, once with AI generation and once with image search","summary":"Stanford University's design centres on the same design brief, once with AI generation and once with image search. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Computer Science / Human-Centered AI","level":"Level unstated","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-027","title":"Show your full working, then have AI solve the same problem and compare","summary":"This entry centres on show your full working, then have AI solve the same problem and compare. The record is enough to identify the shape of the task, but little detail is public.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Engineering Economy","level":"Level unstated","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-030","title":"Write your own research questions and items, then take LLM feedback against the readings","summary":"This entry centres on write your own research questions and items, then take LLM feedback against the readings. The record is enough to identify the shape of the task, but little detail is public.","type":"Peer feedback vs AI feedback","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Research Methods","level":"Level unstated","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-038","title":"A green-light data visualisation exercise, with AI and without","summary":"University of Virginia's design centres on a green-light data visualisation exercise, with AI and without. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":1,"disc":"Statistics","level":"Undergraduate","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-044","title":"PAIRR: peer review, AI review, then reflection","summary":"A multi-institution study including UC Davis's design centres on pAIRR: peer review, AI review, then reflection. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Peer feedback vs AI feedback","pkg":"The same task twice: your pass and the machine's","tier":2,"disc":"Writing / Cross-disciplinary","level":"Undergraduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-065","title":"A five-step package comparing peer feedback with AI feedback","summary":"The same draft goes to peer feedback and then to AI feedback; students compare the two and show their judgement through a reflection and a revision record.","type":"Peer feedback vs AI feedback","pkg":"The same task twice: your pass and the machine's","tier":1,"disc":"Cross-disciplinary writing","level":"University","mode":"Online","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-074","title":"Your analysis and the AI's, side by side","summary":"Students analyse the same case, text or dataset alone first, then have AI analyse it, and set the two analyses side by side.","type":"Do it yourself first, then compare","pkg":"The same task twice: your pass and the machine's","tier":1,"disc":"Cross-disciplinary","level":"University","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-005","title":"Claim-and-evidence colour coding carried through every formal assignment","summary":"Cornell University's design centres on claim-and-evidence colour coding carried through every formal assignment. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Public Health / One Health / Planetary Health","level":"MPH, year 1","mode":"Hybrid","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-006","title":"Integrate, verify and evaluate an AI research draft against peer-reviewed literature","summary":"This entry centres on integrate, verify and evaluate an AI research draft against peer-reviewed literature. The record is enough to identify the shape of the task, but little detail is public.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Medical Laboratory Sciences","level":"graduate","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-011","title":"Ask AI about a paper you actually read, then catch its errors and rebut","summary":"This entry centres on ask AI about a paper you actually read, then catch its errors and rebut. The record is enough to identify the shape of the task, but little detail is public.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Interdisciplinary Environmental Science","level":"junior undergraduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-031","title":"Colour-coded fact-checking of an AI-generated literature review","summary":"This entry centres on colour-coded fact-checking of an AI-generated literature review. The record is enough to identify the shape of the task, but little detail is public.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Psychology","level":"Undergraduate, lower and upper division","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-064","title":"Verifying AI annotations","summary":"Hypothesis's design centres on verifying AI annotations. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Cross-disciplinary","level":"unspecified","mode":"Online","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""},{"id":"DES-078","title":"An AI-assisted literature review with a graded rubric","summary":"Students use AI to find literature and sharpen the research question, but must submit a critical reflection and the chat transcript so their search judgement is visible.","type":"Source verification","pkg":"Verify what the AI told you","tier":1,"disc":"Psychology (memory and cognition)","level":"Undergraduate, year 3","mode":"Unstated","rec":"Literature case","verbatim":true,"adapted_from":false,"change":""},{"id":"DES-079","title":"An AI-assisted literature review project on psychology programme goals","summary":"Fortner & Katzarska-Miller / Teaching of Psychology's design centres on an AI-assisted literature review project on psychology programme goals. The record is enough to identify the shape of the task, but detail is limited to what the source returned.","type":"Source verification","pkg":"Verify what the AI told you","tier":2,"disc":"Psychology research methods","level":"Undergraduate","mode":"Unstated","rec":"Literature case","verbatim":false,"adapted_from":false,"change":""}];
+
+/* Illustrative activity. Deterministic from the id so the page is stable,
+   and Tier 1 designs skew higher because they are the ones you can actually use. */
+function seeded(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)}
+const NAMES=["A. Rivera","J. Okonkwo","M. Delgado","S. Haddad","T. Nakamura","L. Brennan","P. Mwangi","C. Vasquez"];
+DATA.forEach(d=>{
+  const h=seeded(d.id);
+  d.stars = d.tier===1 ? 3+h%22 : h%9;
+  d.forks = d.tier===1 ? h%5 : h%2;
+  d.used  = Math.max(0, Math.floor(d.stars/4) - (d.tier===1?0:1));
+  d.by    = NAMES[h%NAMES.length];
+});
+const LOCAL = DATA.find(d=>d.rec==="Local adaptation");
+if(LOCAL){LOCAL.stars=6;LOCAL.forks=0;LOCAL.used=2;LOCAL.by="Baoyu Wang";}
+
+const PKGS=[...new Set(DATA.map(d=>d.pkg))].sort();
+const state={q:"",tier:null,pkg:null,sort:null,open:null};
+const starred=new Set(), forked=new Set();
+try{ (JSON.parse(localStorage.getItem("ax-stars")||"[]")).forEach(x=>starred.add(x)); }catch(e){}
+const save=()=>{try{localStorage.setItem("ax-stars",JSON.stringify([...starred]))}catch(e){}};
+
+const AVC=["#8C1D40","#2E6F52","#3D5A80","#7A4E2D","#5B4B8A","#8A6D1F","#2F6F73","#7D3350"];
+const initials=n=>n.split(/[\s.]+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const avatar=(n,cls="")=>{const h=seeded(n);
+  return `<span class="av ${cls}" style="background:${AVC[h%AVC.length]}">${initials(n)}</span>`};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const STAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3.5l2.6 5.6 6 .8-4.4 4.2 1.1 6.1-5.3-3-5.3 3 1.1-6.1L3.4 9.9l6-.8z"/></svg>`;
+const FORK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="2.3"/><circle cx="17.5" cy="4.5" r="2.3"/><circle cx="12" cy="19.5" r="2.3"/><path d="M6.5 6.8v3.4c0 1.6 1.3 2.9 2.9 2.9h5.2c1.6 0 2.9-1.3 2.9-2.9V6.8M12 13.1v4.1"/></svg>`;
+const EYE=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>`;
+
+function filtered(){
+  const q=state.q.toLowerCase();
+  let out=DATA.filter(d=>{
+    if(state.tier && d.tier!==state.tier) return false;
+    if(state.pkg && d.pkg!==state.pkg) return false;
+    if(q && !(d.title+" "+d.summary+" "+d.disc+" "+d.type).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(state.sort==="stars") out=[...out].sort((a,b)=>b.stars-a.stars);
+  if(state.sort==="forks") out=[...out].sort((a,b)=>b.forks-a.forks||b.stars-a.stars);
+  return out;
+}
+
+function renderStats(){
+  const t1=DATA.filter(d=>d.tier===1).length;
+  const rows=[[DATA.length,"designs"],[t1,"ready to use"],[PKGS.length,"collections"],
+              [new Set(DATA.map(d=>d.disc.split("/")[0].trim())).size,"disciplines"]];
+  stats.innerHTML=rows.map(([n,l])=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
+}
+
+function renderFacets(){
+  const t1=DATA.filter(d=>d.tier===1).length;
+  tiers.innerHTML=[
+    [null,"Everything",DATA.length],
+    [1,"Student-facing text on file",t1],
+    [2,"Described second-hand",DATA.length-t1]
+  ].map(([v,l,n])=>`<button class="facet" data-tier="${v}" aria-pressed="${state.tier===v}">
+      <span>${l}</span><span class="n">${n}</span></button>`).join("");
+  pkgs.innerHTML=[`<button class="facet" data-pkg="null" aria-pressed="${!state.pkg}">
+      <span>All collections</span><span class="n">${DATA.length}</span></button>`]
+    .concat(PKGS.map(p=>{const n=DATA.filter(d=>d.pkg===p).length;
+      return `<button class="facet" data-pkg="${esc(p)}" aria-pressed="${state.pkg===p}">
+        <span>${esc(p)}</span><span class="n">${n}</span></button>`})).join("");
+}
+
+function card(d){
+  const on=starred.has(d.id), f=forked.has(d.id);
+  return `<button class="card ${d.tier===1?"t1":""} ${d.rec==="Local adaptation"?"local":""}" data-id="${d.id}">
+    <div class="card-top"><h3>${esc(d.title)}</h3><span class="sid">${d.id}</span></div>
+    <p>${esc(d.summary)}</p>
+    <div class="tags">
+      ${d.tier===1?'<span class="tag ok">Ready to use</span>':'<span class="tag">Second-hand</span>'}
+      ${d.rec==="Local adaptation"?'<span class="tag mine">New College</span>':""}
+      <span class="tag">${esc(d.mode)}</span>
+    </div>
+    <div class="card-foot">
+      <span class="act ${on?"on":""}" data-star="${d.id}">${STAR}${d.stars+(on?1:0)}</span>
+      <span class="act">${FORK}${d.forks+(f?1:0)}</span>
+      <span class="credit">${avatar(d.by)}<small>${esc(d.by.split(" ").pop())}</small></span>
+    </div>
+  </button>`;
+}
+
+function render(){
+  const list=filtered();
+  grid.innerHTML=list.map(card).join("");
+  empty.hidden=list.length>0;
+  count.textContent=`${list.length} of ${DATA.length}`;
+  renderFacets();
+}
+
+function lineage(d){
+  const kids=DATA.filter(x=>x.rec==="Local adaptation");
+  const isRoot=d.rec!=="Local adaptation";
+  const root=isRoot?d:DATA.find(x=>x.id==="DES-001")||d;
+  const mine=isRoot?kids.filter(k=>root.id==="DES-001"):[d];
+  let h=`<div class="tree"><div class="node">
+      <div class="rail"><span class="dot"></span>${mine.length?'<span class="line"></span>':""}</div>
+      <div><b>${esc(root.title)}</b><small>${root.id} &middot; original</small></div></div>`;
+  mine.forEach(k=>{h+=`<div class="node child">
+      <div class="rail"><span class="dot"></span></div>
+      <div><b>${esc(k.title)}</b><small>adapted by ${esc(k.by)}</small>
+      ${k.change?`<em>&ldquo;${esc(k.change)}&rdquo;</em>`:""}</div></div>`});
+  if(!mine.length) h+=`<div class="node child"><div class="rail"><span class="dot"></span></div>
+      <div><em>No adaptations yet. Yours would be the first.</em></div></div>`;
+  return h+"</div>";
+}
+
+function openCard(id){
+  const d=DATA.find(x=>x.id===id); if(!d) return;
+  state.open=id;
+  const on=starred.has(d.id), f=forked.has(d.id);
+  document.body.insertAdjacentHTML("beforeend",
+   `<div class="scrim" id="scrim"></div><aside class="drawer" id="drawer" role="dialog" aria-label="${esc(d.title)}">
+    <div class="dr-head"><h2>${esc(d.title)}</h2><button class="x" id="closed" aria-label="Close">&times;</button></div>
+    <div class="tags">
+      ${d.tier===1?'<span class="tag ok">Ready to use</span>':'<span class="tag">Second-hand</span>'}
+      <span class="tag">${esc(d.type)}</span><span class="tag">${esc(d.mode)}</span>
+    </div>
+    <p class="dr-body">${esc(d.summary)}</p>
+    <div class="bigacts">
+      <button class="big ${on?"on":""}" id="b-star">${STAR}${on?"Starred":"Star"} &middot; ${d.stars+(on?1:0)}</button>
+      <button class="big primary" id="b-fork">${FORK}Adapt for my course</button>
+    </div>
+    <div class="dr-sect"><h4>Details</h4>
+      <dl class="meta">
+        <dt>Source ID</dt><dd>${d.id}</dd>
+        <dt>Discipline</dt><dd>${esc(d.disc)||"&mdash;"}</dd>
+        <dt>Level</dt><dd>${esc(d.level)||"&mdash;"}</dd>
+        <dt>Collection</dt><dd>${esc(d.pkg)}</dd>
+        <dt>Verbatim text</dt><dd>${d.verbatim?"On file":"Not retrievable"}</dd>
+      </dl></div>
+    <div class="dr-sect"><h4>Adaptation lineage</h4>${lineage(d)}</div>
+    <div class="dr-sect"><h4>Take it elsewhere</h4>
+      <button class="link"><span class="chip">LTI</span>Add to a Canvas course (planned)<em>Canvas</em></button>
+      <button class="link"><span class="chip">IMSCC</span>Export as a Commons resource (planned)<em>Commons</em></button>
+      <button class="link"><span class="chip">SLACK</span>Share to #ai-teaching (planned)<em>Slack</em></button>
+    </div>
+    <div class="dr-sect"><h4>Credit</h4>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${avatar(d.by)}<div><b style="font-size:13.5px">${esc(d.by)}</b>
+        <div style="font-size:12px;color:var(--faint)">${d.rec==="Local adaptation"?"Adapted this design":"Documented from published source"}</div></div>
+      </div></div>
+    </aside>`);
+  document.getElementById("scrim").onclick=closeCard;
+  document.getElementById("closed").onclick=closeCard;
+  document.getElementById("b-star").onclick=()=>{toggleStar(d.id);closeCard();openCard(d.id)};
+  document.getElementById("b-fork").onclick=()=>{forked.add(d.id);closeCard();render()};
+  document.addEventListener("keydown",esckey);
+}
+function esckey(e){if(e.key==="Escape")closeCard()}
+function closeCard(){
+  document.getElementById("scrim")?.remove();
+  document.getElementById("drawer")?.remove();
+  document.removeEventListener("keydown",esckey);
+  state.open=null;render();
+}
+function toggleStar(id){starred.has(id)?starred.delete(id):starred.add(id);save()}
+
+document.addEventListener("click",e=>{
+  const s=e.target.closest("[data-star]");
+  if(s){e.stopPropagation();toggleStar(s.dataset.star);render();return}
+  const c=e.target.closest(".card"); if(c){openCard(c.dataset.id);return}
+  const t=e.target.closest("[data-tier]");
+  if(t){const v=t.dataset.tier;state.tier=v==="null"?null:+v;render();return}
+  const p=e.target.closest("[data-pkg]");
+  if(p){const v=p.dataset.pkg;state.pkg=v==="null"?null:v;render();return}
+});
+q.oninput=e=>{state.q=e.target.value;render()};
+document.getElementById("s-stars").onclick=e=>{
+  state.sort=state.sort==="stars"?null:"stars";syncSort();render()};
+document.getElementById("s-forks").onclick=e=>{
+  state.sort=state.sort==="forks"?null:"forks";syncSort();render()};
+function syncSort(){
+  document.getElementById("s-stars").setAttribute("aria-pressed",state.sort==="stars");
+  document.getElementById("s-forks").setAttribute("aria-pressed",state.sort==="forks");
+}
+const root=document.documentElement, tb=document.getElementById("theme");
+tb.onclick=()=>{const dark=root.getAttribute("data-theme")==="dark";
+  root.setAttribute("data-theme",dark?"light":"dark");tb.textContent=dark?"Dark":"Light"};
+document.getElementById("signin").title="Demonstration profile only; authentication is not connected.";
+
+renderStats();render();
+</script>
+
+</body>
+</html>
